@@ -50,7 +50,7 @@ HKEY createKey(HKEY parent, char const* name) {
         return HNULL;
 
     HKEY hKey;
-    if (RegCreateKeyExA(parent, "command", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, NULL) != ERROR_SUCCESS)
+    if (RegCreateKeyExA(parent, name, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, NULL) != ERROR_SUCCESS)
         return HNULL;
 
     return hKey;
