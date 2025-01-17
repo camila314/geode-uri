@@ -6,7 +6,7 @@
 using namespace geode::prelude;
 using namespace ipc;
 
-#ifdef GEODE_IS_MACOS
+#if defined(GEODE_IS_MACOS)
 void platformSetup() {
     auto saveDir = Mod::get()->getSaveDir();
     auto appDir = saveDir / "Geode URL Handler.app";
@@ -38,9 +38,7 @@ void platformSetup() {
         }
     }
 }
-#endif
-
-#ifdef GEODE_IS_WINDOWS
+#elif defined(GEODE_IS_WINDOWS)
 #include <windows.h>
 
 constexpr HKEY HNULL = (HKEY)NULL;

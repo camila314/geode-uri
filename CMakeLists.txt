@@ -14,15 +14,19 @@ else()
     message(STATUS "Found Geode: $ENV{GEODE_SDK}")
 endif()
 
-add_subdirectory(handler-win)
-
 add_library(${PROJECT_NAME} SHARED src/main.cpp)
-add_dependencies(${PROJECT_NAME} GeodeURLHandler)
-
 
 if (WIN32)
+    add_subdirectory(handler-win)
     target_link_libraries(${PROJECT_NAME} advapi32)
+elseif (APPLE)
+    add_subdirectory(handler-mac)
+    target_link_libraries(${PROJECT_NAME} "-framework Cocoa")
+else()
+    message(FATAL_ERROR "Invalid Platform")
 endif()
+
+add_dependencies(${PROJECT_NAME} GeodeURLHandler)
 
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
