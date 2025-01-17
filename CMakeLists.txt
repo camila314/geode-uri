@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-project(geode-url VERSION 1.0.0 LANGUAGES CXX OBJCXX)
+project(geode-url VERSION 1.0.0 LANGUAGES CXX)
 
 include(CPM.cmake)
 
@@ -20,6 +20,7 @@ if (WIN32)
     add_subdirectory(handler-win)
     target_link_libraries(${PROJECT_NAME} advapi32)
 elseif (APPLE)
+    enable_language(OBJCXX)
     add_subdirectory(handler-mac)
     target_link_libraries(${PROJECT_NAME} "-framework Cocoa")
 else()
