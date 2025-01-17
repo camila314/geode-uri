@@ -2,14 +2,25 @@
 #include <Geode/loader/IPC.hpp>
 #include <GeodeURLHandler.h>
 #include <sys/stat.h>
+#include <Geode/utils/web.hpp>
 
 using namespace geode::prelude;
 using namespace ipc;
 
 #if defined(GEODE_IS_MACOS)
+#define CommentType CommentType2
+#include <Cocoa/Cocoa.h>
+#undef CommentType
+
 void platformSetup() {
     auto saveDir = Mod::get()->getSaveDir();
     auto appDir = saveDir / "Geode URL Handler.app";
+
+    std::string gdPath = [[NSBundle mainBundle] bundlePath].UTF8String;
+    if (auto err = file::writeString(Mod::get()->getSaveDir() / ".gd-loc", gdPath).err()) {
+        log::error("Failed to write gd path: {}", err);
+        return;
+    } 
 
     if (!std::filesystem::exists(appDir)) {
         auto zipPath = Mod::get()->getTempDir() / "package.zip";
@@ -38,10 +49,20 @@ void platformSetup() {
         }
     }
 }
+
+void bringToFront() {
+    [NSApp activateIgnoringOtherApps:YES];
+    [[NSApp mainWindow] makeKeyAndOrderFront:nil];
+}
 #elif defined(GEODE_IS_WINDOWS)
 #include <windows.h>
+#include <codecvt>
 
 constexpr HKEY HNULL = (HKEY)NULL;
+
+std::string from_wstring(std::wstring const& x) {
+    return std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(x);
+}
 
 HKEY createKey(HKEY parent, char const* name) {
     if (!parent)
@@ -59,16 +80,21 @@ bool setKeyValue(HKEY key, char const* name, char const* value) {
 }
 
 void platformSetup() {
-    auto iconPath = (Mod::get()->getResourcesDir() / "geode.ico").string() + ",1";
-    auto exePath = Mod::get()->getSaveDir() / "GeodeURLHandler.exe";
+    auto exePath = string::wideToUtf8(Mod::get()->getSaveDir() / "GeodeURLHandler.exe");
 
-    if (!std::filesystem::exists(exePath)) {
-        auto exeData = std::vector<uint8_t>(GeodeURLHandler, GeodeURLHandler + sizeof(GeodeURLHandler));
-        if (auto err = file::writeBinary(exePath, exeData).err()) {
-            log::error("Failed to write exe file: {}", err);
-            return;
-        }
+    auto exeData = std::vector<uint8_t>(GeodeURLHandler, GeodeURLHandler + sizeof(GeodeURLHandler));
+    if (auto err = file::writeBinary(exePath, exeData).err()) {
+        log::error("Failed to write exe file: {}", err);
+        return;
     }
+
+    char gdPath[MAX_PATH];
+    GetModuleFileNameA(NULL, gdPath, MAX_PATH);
+
+    if (auto err = file::writeString(Mod::get()->getSaveDir() / ".gd-loc", gdPath).err()) {
+        log::error("Failed to write gd path: {}", err);
+        return;
+    } 
 
     HKEY geodeKey = createKey(HKEY_CURRENT_USER, "Software\\Classes\\geode");
     HKEY iconKey = createKey(geodeKey, "DefaultIcon");
@@ -76,8 +102,7 @@ void platformSetup() {
     HKEY openKey = createKey(shellKey, "open");
     HKEY commandKey = createKey(openKey, "command");
 
-    bool success = setKeyValue(geodeKey, nullptr, "URL:Geode Protocol")
-                && setKeyValue(geodeKey, "URL Protocol", "")
+    bool success = setKeyValue(geodeKey, "URL Protocol", "")
                 && setKeyValue(iconKey, nullptr, "GeodeURLHandler.exe,1")
                 && setKeyValue(commandKey, nullptr, fmt::format("\"{}\" \"%1\"", exePath).c_str());
 
@@ -93,14 +118,47 @@ void platformSetup() {
     if (shellKey) RegCloseKey(shellKey);
     if (openKey) RegCloseKey(openKey);
 }
+
+void bringToFront() {
+    HWND hwnd = WindowFromDC(wglGetCurrentDC());
+    if (hwnd) {
+        ShowWindow(hwnd, SW_RESTORE);
+        SetForegroundWindow(hwnd);
+    }
+}
 #endif
+
+std::string percent_decode(const std::string& str) {
+    std::string result;
+    for (size_t i = 0; i < str.size(); ++i) {
+        if (str[i] == '%') {
+            if (i + 2 < str.size()) {
+                int value;
+                std::istringstream iss(str.substr(i + 1, 2));
+                iss >> std::hex >> value;
+                result += static_cast<char>(value);
+                i += 2;
+            }
+        } else {
+            result += str[i];
+        }
+    }
+    return result;
+}
 
 $on_mod(Loaded) {
     platformSetup();
 
+    if (auto pathFlag = Loader::get()->getLaunchArgument("url-path")) {
+        auto path = percent_decode(pathFlag.value());
+        log::info("WOW a url!! {}", path);
+        bringToFront();
+    }
+
     listen("handle", [](IPCEvent* ev) -> matjson::Value {
         if (auto str = ev->messageData->asString()) {
             log::info("WOW a url!! {}", str.unwrap());
+            bringToFront();
         } else {
             log::error("Invalid IPC Message: {}", ev->messageData);
         }

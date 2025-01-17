@@ -6,7 +6,7 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 project(GeodeURLHandler VERSION 1.0.0)
 
-CPMAddPackage("gh:geode-sdk/ipc#v1.0.0")
+CPMAddPackage("gh:geode-sdk/ipc@1.0.1")
 
 set(GeodeURLHandler_ICON ${CMAKE_CURRENT_SOURCE_DIR}/Icon.icns)
 set_source_files_properties(${GeodeURLHandler_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")

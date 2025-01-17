@@ -14,7 +14,7 @@ else()
     message(STATUS "Found Geode: $ENV{GEODE_SDK}")
 endif()
 
-add_library(${PROJECT_NAME} SHARED src/main.cpp)
+add_library(${PROJECT_NAME} SHARED src/main.mm)
 
 if (WIN32)
     add_subdirectory(handler-win)

@@ -3,14 +3,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(GeodeURLHandler VERSION 1.0.0)
 
-CPMAddPackage("gh:geode-sdk/ipc#v1.0.0")
+CPMAddPackage("gh:geode-sdk/ipc@1.0.1")
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp icon.rc)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES 
-	WIN32_EXECUTABLE TRUE
-	RESOURCE "${CMAKE_CURRENT_SOURCE_DIR}/icon.rc"
-) 
+set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE TRUE) 
 
 target_link_libraries(${PROJECT_NAME} PRIVATE geode-ipc user32)
 
