@@ -1,6 +1,5 @@
-#include "Geode/loader/Event.hpp"
-#include "Geode/loader/EventV2.hpp"
-#include <Geode/Geode.hpp>
+#include <Geode/binding/FLAlertLayer.hpp>
+#include <Geode/loader/EventV2.hpp>
 #include <Geode/loader/IPC.hpp>
 #include <GeodeURI.hpp>
 
@@ -31,13 +30,19 @@ std::string percent_decode(const std::string& str) {
 URIEvent::URIEvent(const std::string& uri) : uri(uri) {}
 std::string const& URIEvent::getURI() const { return uri; }
 
+std::string trimSlash(std::string const& str) {
+    int start = str.find_first_not_of("/");
+    return str.substr(start, str.find_last_not_of("/") + 1 - start);
+}
+
 EventHandler<URIEvent> handleURI(std::string const& handlePath, std::function<void(std::string const&)> callback) {
     auto hand = EventHandler<URIEvent>([handlePath](URIEvent* ev) {
-        return ev->getURI().find(handlePath) == 0;
+        return ev->getURI().find(trimSlash(handlePath) + "/") == 0 || ev->getURI() == trimSlash(handlePath);
     });
     hand.bind([=](URIEvent* ev) {
-        auto uri = ev->getURI();
-        callback(uri.substr(uri.find(handlePath)));
+        auto data = ev->getURI().substr(handlePath.size());
+
+        callback(trimSlash(data));
         return ListenerResult::Stop;
     });
     return hand;

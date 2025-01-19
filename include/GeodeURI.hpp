@@ -1,4 +1,5 @@
-#include <Geode/loader/Event.hpp>
+#pragma once
+
 #include <Geode/loader/EventV2.hpp>
 #include <string>
 

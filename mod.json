@@ -4,9 +4,14 @@
 		"win": "2.2074",
 		"mac": "2.2074"
 	},
-	"id": "camila314.custom-uri",
-	"name": "geode-uri",
+	"id": "camila314.geode-uri",
+	"name": "Geode URI Scheme",
 	"version": "v1.0.0",
 	"developer": "camila314",
-	"description": ""
+	"description": "API mod to allow mods to pick up on geode:// URLs",
+	"api": {
+		"include": [
+			"include/GeodeURI.hpp"
+		]
+	}
 }
