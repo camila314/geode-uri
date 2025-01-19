@@ -100,7 +100,7 @@ $on_mod(Loaded) {
     HKEY openKey = createKey(shellKey, "open");
     HKEY commandKey = createKey(openKey, "command");
 
-    bool success = setKeyValue(geodeKey, "URI Protocol", "")
+    bool success = setKeyValue(geodeKey, "URL Protocol", "")
                 && setKeyValue(iconKey, nullptr, "GeodeURIHandler.exe,1")
                 && setKeyValue(commandKey, nullptr, fmt::format("\"{}\" \"%1\"", exePath).c_str());
 
