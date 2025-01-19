@@ -16,11 +16,11 @@
 }
 
 - (void)handleGetURLEvent:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent {
-    NSString* urlString = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
-    if ([urlString hasPrefix:@"geode://"]) {
-        urlString = [urlString substringFromIndex:8];
-    } else if ([urlString hasPrefix:@"geode:"]) {
-        urlString = [urlString substringFromIndex:6];
+    NSString* uriString = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
+    if ([uriString hasPrefix:@"geode://"]) {
+        uriString = [uriString substringFromIndex:8];
+    } else if ([uriString hasPrefix:@"geode:"]) {
+        uriString = [uriString substringFromIndex:6];
     } else {
         return;
     }
@@ -40,10 +40,10 @@
                                   encoding:NSUTF8StringEncoding
                                   error:nil];
 
-        auto unescaped = [urlString stringByRemovingPercentEncoding];
+        auto unescaped = [uriString stringByRemovingPercentEncoding];
         auto escaped = [unescaped stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]];
 
-        auto arg = [NSString stringWithFormat:@"--geode:url-path=%@", escaped];
+        auto arg = [NSString stringWithFormat:@"--geode:uri-path=%@", escaped];
         [[NSWorkspace sharedWorkspace] launchApplicationAtURL: [NSURL fileURLWithPath:contents]
                                        options: NSWorkspaceLaunchDefault
                                         configuration: @{NSWorkspaceLaunchConfigurationArguments: @[arg]}
@@ -52,7 +52,7 @@
         [NSApp terminate:nil];
     }
 
-    if (!GeodeIPC::send("camila314.custom-uri", "handle", urlString.UTF8String)) {
+    if (!GeodeIPC::send("camila314.custom-uri", "handle", uriString.UTF8String)) {
         NSLog(@"Failed to send IPC message");
 
         NSAlert *alert = [[NSAlert alloc] init];
@@ -64,7 +64,7 @@
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
-    //[NSApp terminate:nil];
+    [NSApp terminate:nil];
 }
 @end
 

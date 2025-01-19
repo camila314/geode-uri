@@ -1,20 +1,17 @@
 #include <Geode/Geode.hpp>
-#include <Geode/loader/IPC.hpp>
-#include <GeodeURLHandler.h>
+#include <GeodeURIHandler.h>
 #include <sys/stat.h>
-#include <Geode/utils/web.hpp>
 
 using namespace geode::prelude;
-using namespace ipc;
 
 #if defined(GEODE_IS_MACOS)
 #define CommentType CommentType2
 #include <Cocoa/Cocoa.h>
 #undef CommentType
 
-void platformSetup() {
+$on_mod(Loaded) {
     auto saveDir = Mod::get()->getSaveDir();
-    auto appDir = saveDir / "Geode URL Handler.app";
+    auto appDir = saveDir / "Geode URI Handler.app";
 
     std::string gdPath = [[NSBundle mainBundle] bundlePath].UTF8String;
     if (auto err = file::writeString(Mod::get()->getSaveDir() / ".gd-loc", gdPath).err()) {
@@ -24,7 +21,7 @@ void platformSetup() {
 
     if (!std::filesystem::exists(appDir)) {
         auto zipPath = Mod::get()->getTempDir() / "package.zip";
-        std::vector<uint8_t> zipData = std::vector<uint8_t>(GeodeURLHandler, GeodeURLHandler + GeodeURLHandler_len);
+        std::vector<uint8_t> zipData = std::vector<uint8_t>(GeodeURIHandler, GeodeURIHandler + GeodeURIHandler_len);
 
         auto zipFile = file::Unzip::create(zipData);
         if (auto err = zipFile.err()) {
@@ -37,7 +34,7 @@ void platformSetup() {
             return;
         }
 
-        auto execDir = appDir / "Contents" / "MacOS" / "Geode URL Handler";
+        auto execDir = appDir / "Contents" / "MacOS" / "Geode URI Handler";
         if (!std::filesystem::exists(execDir)) {
             log::error("Failed to find file: {}", execDir);
             return;
@@ -54,6 +51,7 @@ void bringToFront() {
     [NSApp activateIgnoringOtherApps:YES];
     [[NSApp mainWindow] makeKeyAndOrderFront:nil];
 }
+
 #elif defined(GEODE_IS_WINDOWS)
 #include <windows.h>
 #include <codecvt>
@@ -79,10 +77,10 @@ bool setKeyValue(HKEY key, char const* name, char const* value) {
     return RegSetValueExA(key, name, 0, REG_SZ, (const BYTE*)value, strlen(value)) == ERROR_SUCCESS;
 }
 
-void platformSetup() {
-    auto exePath = string::wideToUtf8(Mod::get()->getSaveDir() / "GeodeURLHandler.exe");
+$on_mod(Loaded) {
+    auto exePath = string::wideToUtf8(Mod::get()->getSaveDir() / "GeodeURIHandler.exe");
 
-    auto exeData = std::vector<uint8_t>(GeodeURLHandler, GeodeURLHandler + sizeof(GeodeURLHandler));
+    auto exeData = std::vector<uint8_t>(GeodeURIHandler, GeodeURIHandler + sizeof(GeodeURIHandler));
     if (auto err = file::writeBinary(exePath, exeData).err()) {
         log::error("Failed to write exe file: {}", err);
         return;
@@ -102,8 +100,8 @@ void platformSetup() {
     HKEY openKey = createKey(shellKey, "open");
     HKEY commandKey = createKey(openKey, "command");
 
-    bool success = setKeyValue(geodeKey, "URL Protocol", "")
-                && setKeyValue(iconKey, nullptr, "GeodeURLHandler.exe,1")
+    bool success = setKeyValue(geodeKey, "URI Protocol", "")
+                && setKeyValue(iconKey, nullptr, "GeodeURIHandler.exe,1")
                 && setKeyValue(commandKey, nullptr, fmt::format("\"{}\" \"%1\"", exePath).c_str());
 
     if (!success) {
@@ -127,41 +125,3 @@ void bringToFront() {
     }
 }
 #endif
-
-std::string percent_decode(const std::string& str) {
-    std::string result;
-    for (size_t i = 0; i < str.size(); ++i) {
-        if (str[i] == '%') {
-            if (i + 2 < str.size()) {
-                int value;
-                std::istringstream iss(str.substr(i + 1, 2));
-                iss >> std::hex >> value;
-                result += static_cast<char>(value);
-                i += 2;
-            }
-        } else {
-            result += str[i];
-        }
-    }
-    return result;
-}
-
-$on_mod(Loaded) {
-    platformSetup();
-
-    if (auto pathFlag = Loader::get()->getLaunchArgument("url-path")) {
-        auto path = percent_decode(pathFlag.value());
-        log::info("WOW a url!! {}", path);
-        bringToFront();
-    }
-
-    listen("handle", [](IPCEvent* ev) -> matjson::Value {
-        if (auto str = ev->messageData->asString()) {
-            log::info("WOW a url!! {}", str.unwrap());
-            bringToFront();
-        } else {
-            log::error("Invalid IPC Message: {}", ev->messageData);
-        }
-        return {};
-    });
-}

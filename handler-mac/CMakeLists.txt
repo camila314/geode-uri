@@ -4,16 +4,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-project(GeodeURLHandler VERSION 1.0.0)
+project(GeodeURIHandler VERSION 1.0.0)
 
 CPMAddPackage("gh:geode-sdk/ipc@1.0.1")
 
-set(GeodeURLHandler_ICON ${CMAKE_CURRENT_SOURCE_DIR}/Icon.icns)
-set_source_files_properties(${GeodeURLHandler_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+set(GeodeURIHandler_ICON ${CMAKE_CURRENT_SOURCE_DIR}/Icon.icns)
+set_source_files_properties(${GeodeURIHandler_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
-add_executable(${PROJECT_NAME} MACOSX_BUNDLE src/main.mm ${GeodeURLHandler_ICON})
+add_executable(${PROJECT_NAME} MACOSX_BUNDLE src/main.mm ${GeodeURIHandler_ICON})
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    OUTPUT_NAME "Geode URL Handler"
+    OUTPUT_NAME "Geode URI Handler"
     MACOSX_BUNDLE TRUE
     MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist"
 )
@@ -21,18 +21,21 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 target_link_libraries(${PROJECT_NAME} PRIVATE geode-ipc "-framework Cocoa")
 
 install(CODE "
-    include(BundleUtilities)
-    fixup_bundle(\"${CMAKE_CURRENT_BINARY_DIR}/Geode URL Handler.app\" \"\" \"\")
     file(ARCHIVE_CREATE
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/GeodeURLHandler.zip
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/GeodeURIHandler.zip
         FORMAT zip
-        PATHS \"${CMAKE_CURRENT_BINARY_DIR}/Geode URL Handler.app\"
+        PATHS \"${CMAKE_CURRENT_BINARY_DIR}/Geode URI Handler.app\"
     )
-    file(REMOVE_RECURSE \"${CMAKE_CURRENT_BINARY_DIR}/Geode URL Handler.app/\")
-    execute_process(OUTPUT_FILE ${CMAKE_BINARY_DIR}/GeodeURLHandler.h COMMAND xxd -n GeodeURLHandler -i \"${CMAKE_CURRENT_BINARY_DIR}/GeodeURLHandler.zip\")
+    file(RENAME \"${CMAKE_CURRENT_BINARY_DIR}/Geode URI Handler.app/\" \"${CMAKE_CURRENT_BINARY_DIR}/folder\")
+    execute_process(OUTPUT_FILE ${CMAKE_BINARY_DIR}/GeodeURIHandler.h COMMAND xxd -n GeodeURIHandler -i \"${CMAKE_CURRENT_BINARY_DIR}/GeodeURIHandler.zip\")
 ")
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_BINARY_DIR}/install
-    BYPRODUCTS ${CMAKE_BINARY_DIR}/GeodeURLHandler.h
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND zip -r GeodeURIHandler.zip 'Geode URI Handler.app'
+    COMMAND xxd -n GeodeURIHandler -i ${CMAKE_CURRENT_BINARY_DIR}/GeodeURIHandler.zip > ${CMAKE_BINARY_DIR}/GeodeURIHandler.h
+    COMMAND echo > 'Geode URI Handler.app/Contents/Info.plist'
+    BYPRODUCTS "${CMAKE_BINARY_DIR}/GeodeURIHandler.h"
 )
+
+add_custom_target(URIHeader DEPENDS "${CMAKE_BINARY_DIR}/GeodeURIHandler.h")

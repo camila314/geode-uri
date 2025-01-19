@@ -5,11 +5,11 @@
     <key>LSBackgroundOnly</key>
     <true/>
     <key>CFBundleDisplayName</key>
-    <string>Geode URL Handler</string>
+    <string>Geode URI Handler</string>
     <key>CFBundleName</key>
-    <string>Geode URL Handler</string>
+    <string>Geode URI Handler</string>
     <key>CFBundleIdentifier</key>
-    <string>geode.url-handler</string>
+    <string>geode.uri-handler</string>
     <key>LSMinimumSystemVersion</key>
     <string>10.13</string>
     <key>CFBundleShortVersionString</key>
@@ -21,7 +21,7 @@
     <key>CFBundleInfoDictionaryVersion</key>
     <string>10.0</string>
     <key>CFBundleExecutable</key>
-    <string>Geode URL Handler</string>
+    <string>Geode URI Handler</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleIconFile</key>
@@ -30,7 +30,7 @@
     <array>
         <dict>
             <key>CFBundleURLName</key>
-            <string>geode.url-scheme</string>
+            <string>geode.uri-scheme</string>
             <key>CFBundleURLSchemes</key>
             <array>
                 <string>geode</string>

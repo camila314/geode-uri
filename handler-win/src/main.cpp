@@ -24,12 +24,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     if (__argc != 2)
         return 1;
 
-    std::string urlString = __argv[1];
+    std::string uriString = __argv[1];
 
-    if (urlString.find("geode://") == 0) {
-        urlString = urlString.substr(8);
-    } else if (urlString.find("geode:") == 0) {
-        urlString = urlString.substr(6);
+    if (uriString.find("geode://") == 0) {
+        uriString = uriString.substr(8);
+    } else if (uriString.find("geode:") == 0) {
+        uriString = uriString.substr(6);
     } else {
         return 1;
     }
@@ -51,14 +51,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             auto gdPath = std::filesystem::path(gdPath_);
             auto gdDir = gdPath.parent_path();
 
-            char urlUnescaped[MAX_PATH] = {0};
-            char urlEscaped[MAX_PATH] = {0};
-            UrlUnescapeA((char*)urlString.c_str(), urlUnescaped, nullptr, NULL);
-            UrlEscapeA(urlUnescaped, urlEscaped, nullptr, NULL);
-            urlString = urlEscaped;
+            char uriUnescaped[MAX_PATH] = {0};
+            char uriEscaped[MAX_PATH] = {0};
+            UrlUnescapeA((char*)uriString.c_str(), uriUnescaped, nullptr, NULL);
+            UrlEscapeA(uriUnescaped, uriEscaped, nullptr, NULL);
+            uriString = uriEscaped;
 
             std::filesystem::current_path(gdDir);
-            ShellExecuteW(NULL, L"open", gdPath.wstring().c_str(), utf8ToWide(std::format("--geode:url-path={}", urlString)).c_str(), gdDir.wstring().c_str(), TRUE);
+            ShellExecuteW(NULL, L"open", gdPath.wstring().c_str(), utf8ToWide(std::format("--geode:uri-path={}", uriString)).c_str(), gdDir.wstring().c_str(), TRUE);
             return 0;
         }
 
@@ -66,7 +66,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         return 1;
     }
 
-    if (!GeodeIPC::send("camila314.custom-uri", "handle", urlString)) {
+    if (!GeodeIPC::send("camila314.custom-uri", "handle", uriString)) {
         MessageBoxA(NULL, "Failed to communicate.", "Error", MB_OK | MB_ICONERROR);
         return 1;
     }

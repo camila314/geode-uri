@@ -6,7 +6,7 @@ $hexString = [BitConverter]::ToString($bytes).Replace("-", "")
 $hexString = $hexString -replace '(.{2})', '0x$1, '
 
 $headerContent = @"
-unsigned char GeodeURLHandler[] = {
+unsigned char GeodeURIHandler[] = {
 $hexString
 };
 "@
