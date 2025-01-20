@@ -30,12 +30,11 @@ install(CODE "
     execute_process(OUTPUT_FILE ${CMAKE_BINARY_DIR}/GeodeURIHandler.h COMMAND xxd -n GeodeURIHandler -i \"${CMAKE_CURRENT_BINARY_DIR}/GeodeURIHandler.zip\")
 ")
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+add_custom_command(DEPENDS ${PROJECT_NAME}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMAND zip -r GeodeURIHandler.zip 'Geode URI Handler.app'
     COMMAND xxd -n GeodeURIHandler -i ${CMAKE_CURRENT_BINARY_DIR}/GeodeURIHandler.zip > ${CMAKE_BINARY_DIR}/GeodeURIHandler.h
-    COMMAND echo > 'Geode URI Handler.app/Contents/Info.plist'
-    BYPRODUCTS "${CMAKE_BINARY_DIR}/GeodeURIHandler.h"
+    OUTPUT "${CMAKE_BINARY_DIR}/GeodeURIHandler.h"
 )
 
 add_custom_target(URIHeader DEPENDS "${CMAKE_BINARY_DIR}/GeodeURIHandler.h")

@@ -1,6 +1,7 @@
 #include <Geode/binding/FLAlertLayer.hpp>
 #include <Geode/loader/EventV2.hpp>
 #include <Geode/loader/IPC.hpp>
+#include <Geode/loader/GameEvent.hpp>
 #include <GeodeURI.hpp>
 
 using namespace geode::prelude;
@@ -44,7 +45,9 @@ void runEvent(std::string const& pathFlag) {
 
 $on_mod(Loaded) {
     if (auto pathFlag = Loader::get()->getLaunchArgument("uri-path")) {
-        runEvent(pathFlag.value());
+        (new EventListener<GameEventFilter>(GameEventType::Loaded))->bind([pathFlag](auto) {
+            runEvent(pathFlag.value());
+        });
     }
 
     listen("handle", [](IPCEvent* ev) -> matjson::Value {
