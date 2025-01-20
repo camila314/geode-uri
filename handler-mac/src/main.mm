@@ -52,7 +52,7 @@
         [NSApp terminate:nil];
     }
 
-    if (!GeodeIPC::send("camila314.custom-uri", "handle", uriString.UTF8String)) {
+    if (!GeodeIPC::send("camila314.geode-uri", "handle", uriString.UTF8String)) {
         NSLog(@"Failed to send IPC message");
 
         NSAlert *alert = [[NSAlert alloc] init];

@@ -66,7 +66,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         return 1;
     }
 
-    if (!GeodeIPC::send("camila314.custom-uri", "handle", uriString)) {
+    if (!GeodeIPC::send("camila314.geode-uri", "handle", uriString)) {
         MessageBoxA(NULL, "Failed to communicate.", "Error", MB_OK | MB_ICONERROR);
         return 1;
     }
