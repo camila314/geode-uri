@@ -58,7 +58,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             uriString = uriEscaped;
 
             std::filesystem::current_path(gdDir);
-            ShellExecuteW(NULL, L"open", gdPath.wstring().c_str(), utf8ToWide(std::format("--geode:uri-path={}", uriString)).c_str(), gdDir.wstring().c_str(), TRUE);
+            ShellExecuteW(NULL, L"open", gdPath.wstring().c_str(), utf8ToWide(std::format("--geode:camila314.geode-uri-path={}", uriString)).c_str(), gdDir.wstring().c_str(), TRUE);
             return 0;
         }
 

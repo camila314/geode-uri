@@ -30,6 +30,7 @@ std::string percent_decode(const std::string& str) {
 
 void runEvent(std::string const& pathFlag) {
     auto path = percent_decode(pathFlag);
+    log::info("Running URI: {}", path);
     auto res = URIEvent(path).post();
     if (res == ListenerResult::Propagate) {
         log::info("No handler found for URI: {}", path);
@@ -44,7 +45,7 @@ void runEvent(std::string const& pathFlag) {
 }
 
 $on_mod(Loaded) {
-    if (auto pathFlag = Loader::get()->getLaunchArgument("uri-path")) {
+    if (auto pathFlag = Mod::get()->getLaunchArgument("uri-path")) {
         (new EventListener<GameEventFilter>(GameEventType::Loaded))->bind([pathFlag](auto) {
             runEvent(pathFlag.value());
         });
@@ -52,6 +53,7 @@ $on_mod(Loaded) {
 
     listen("handle", [](IPCEvent* ev) -> matjson::Value {
         if (auto str = ev->messageData->asString().ok()) {
+            log::info("Received IPC Message: {}", str.value());
             Loader::get()->queueInMainThread([str] { runEvent(str.value()); });
         } else {
             log::error("Invalid IPC Message: {}", ev->messageData);
