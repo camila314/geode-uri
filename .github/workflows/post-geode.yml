@@ -34,7 +34,7 @@ jobs:
       - name: Setup Login with Geode
         run: |
           geode profile add --name GithubActions / win
-          geode index login --github_token ${{ secrets.GITHUB_TOKEN }}
+          geode index login --github-token ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create GitHub Release
         id: create_release
