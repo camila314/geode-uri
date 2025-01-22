@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>LSBackgroundOnly</key>
+    <true/>
+    <key>CFBundleDisplayName</key>
+    <string>Geode URI Handler</string>
+    <key>CFBundleName</key>
+    <string>Geode URI Handler</string>
+    <key>CFBundleIdentifier</key>
+    <string>geode.uri-handler</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>10.13</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>10.0</string>
+    <key>CFBundleExecutable</key>
+    <string>Geode URI Handler</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleIconFile</key>
+    <string>Icon.icns</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>geode.uri-scheme</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>geode</string>
+            </array>
+        </dict>
+    </array>
+</dict>
+</plist>

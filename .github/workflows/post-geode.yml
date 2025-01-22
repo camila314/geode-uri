@@ -1,0 +1,53 @@
+name: Upload to Geode Index
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    permissions:
+      actions: read
+      contents: write
+
+    name: Upload to Geode Index
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dawidd6/action-download-artifact@v7
+        with:
+          workflow: multi-platform.yml
+          name: Build Output
+          path: ./BuildOutput
+
+      - name: Set Up Values
+        run: |
+          echo "MOD_VERSION=$(cat mod.json | jq -r .version)" >> $GITHUB_ENV
+          echo "CHANGELOG=$(awk 'BEGIN { in_section = 0 } ; /^#.+/ { if (in_section) exit; next } ; /./ { in_section = 1; print }' changelog.md || echo Automatic update to $MOD_VERSION)" >> $GITHUB_ENV
+
+      - name: Setup CLI
+        uses: geode-sdk/cli/.github/actions/setup@main
+        with:
+          version: nightly
+
+      - name: Setup Login with Geode
+        run: |
+          geode profile add --name GithubActions / win
+          geode index login --github-token ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: BuildOutput/*.geode
+          body: ${{ env.CHANGELOG }}
+          tag_name: ${{ env.MOD_VERSION }}
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload to Geode
+        run: |
+          geode index mods update ${{ fromJSON(steps.create_release.outputs.assets)[0].browser_download_url }} ||
+          geode index mods create ${{ fromJSON(steps.create_release.outputs.assets)[0].browser_download_url }}
