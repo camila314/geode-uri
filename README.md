@@ -8,7 +8,7 @@ Allows **geode://** to be intercepted by mods.
 #include <Geode/Geode.hpp>
 
 $on_mod(Loaded) {
-	handleURI("/alert", [](std::string const& path) {
+	handleURI("alert", [](std::string const& path) {
 		FLAlertLayer::create("Custom Alert", path, "Ok")->show();
 	});
 }

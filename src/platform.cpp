@@ -19,31 +19,33 @@ $on_mod(Loaded) {
         return;
     } 
 
-    if (!std::filesystem::exists(appDir)) {
-        auto zipPath = Mod::get()->getTempDir() / "package.zip";
-        std::vector<uint8_t> zipData = std::vector<uint8_t>(GeodeURIHandler, GeodeURIHandler + GeodeURIHandler_len);
+    if (std::filesystem::exists(appDir)) {
+        std::filesystem::remove_all(appDir);
+    }
 
-        auto zipFile = file::Unzip::create(zipData);
-        if (auto err = zipFile.err()) {
-            log::error("Failed to create zip file: {}", err);
-            return;
-        }
+    auto zipPath = Mod::get()->getTempDir() / "package.zip";
+    std::vector<uint8_t> zipData = std::vector<uint8_t>(GeodeURIHandler, GeodeURIHandler + GeodeURIHandler_len);
 
-        if (auto err = zipFile.unwrap().extractAllTo(saveDir).err()) {
-            log::error("Failed to extract zip file: {}", err);
-            return;
-        }
+    auto zipFile = file::Unzip::create(zipData);
+    if (auto err = zipFile.err()) {
+        log::error("Failed to create zip file: {}", err);
+        return;
+    }
 
-        auto execDir = appDir / "Contents" / "MacOS" / "Geode URI Handler";
-        if (!std::filesystem::exists(execDir)) {
-            log::error("Failed to find file: {}", execDir);
-            return;
-        }
+    if (auto err = zipFile.unwrap().extractAllTo(saveDir).err()) {
+        log::error("Failed to extract zip file: {}", err);
+        return;
+    }
 
-        if (chmod(execDir.c_str(), 0777) == -1) {
-            log::error("Failed to chmod file: {}", execDir);
-            return;
-        }
+    auto execDir = appDir / "Contents" / "MacOS" / "Geode URI Handler";
+    if (!std::filesystem::exists(execDir)) {
+        log::error("Failed to find file: {}", execDir);
+        return;
+    }
+
+    if (chmod(execDir.c_str(), 0777) == -1) {
+        log::error("Failed to chmod file: {}", execDir);
+        return;
     }
 }
 

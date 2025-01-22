@@ -43,7 +43,7 @@
         auto unescaped = [uriString stringByRemovingPercentEncoding];
         auto escaped = [unescaped stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]];
 
-        auto arg = [NSString stringWithFormat:@"--geode:camila314.geode-uri-path=%@", escaped];
+        auto arg = [NSString stringWithFormat:@"--geode:camila314.geode-uri.path=%@", escaped];
         [[NSWorkspace sharedWorkspace] launchApplicationAtURL: [NSURL fileURLWithPath:contents]
                                        options: NSWorkspaceLaunchDefault
                                         configuration: @{NSWorkspaceLaunchConfigurationArguments: @[arg]}

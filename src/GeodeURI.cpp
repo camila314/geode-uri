@@ -39,12 +39,11 @@ void runEvent(std::string const& pathFlag) {
             "Ok"
         )->show();
     }
-
-    bringToFront();
 }
 
 $on_mod(Loaded) {
-    if (auto pathFlag = Mod::get()->getLaunchArgument("uri-path")) {
+    if (auto pathFlag = Mod::get()->getLaunchArgument("path")) {
+        bringToFront();
         (new EventListener<GameEventFilter>(GameEventType::Loaded))->bind([pathFlag](auto) {
             runEvent(pathFlag.value());
         });
@@ -52,7 +51,10 @@ $on_mod(Loaded) {
 
     listen("handle", [](IPCEvent* ev) -> matjson::Value {
         if (auto str = ev->messageData->asString().ok()) {
-            Loader::get()->queueInMainThread([str] { runEvent(str.value()); });
+            Loader::get()->queueInMainThread([str] {
+                bringToFront();
+                runEvent(str.value());
+            });
         } else {
             log::error("Invalid IPC Message: {}", ev->messageData);
         }

@@ -34,13 +34,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         return 1;
     }
 
-    wchar_t path[MAX_PATH];
-    GetModuleFileNameW(NULL, path, MAX_PATH);
-
-    std::filesystem::path exeDir = std::filesystem::path(path).parent_path();
-
     if (!GeodeIPC::send("geode.loader", "ipc-test", {})) {
-        auto strPath = exeDir / ".gd-loc";
+        wchar_t path[MAX_PATH];
+        GetModuleFileNameW(NULL, path, MAX_PATH);
+
+        auto strPath = std::filesystem::path(path).parent_path() / ".gd-loc";
         if (std::filesystem::exists(strPath)) {
             std::ifstream file(strPath);
             std::string gdPath_;
@@ -58,7 +56,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             uriString = uriEscaped;
 
             std::filesystem::current_path(gdDir);
-            ShellExecuteW(NULL, L"open", gdPath.wstring().c_str(), utf8ToWide(std::format("--geode:camila314.geode-uri-path={}", uriString)).c_str(), gdDir.wstring().c_str(), TRUE);
+            ShellExecuteW(NULL, L"open", gdPath.wstring().c_str(), utf8ToWide(std::format("--geode:camila314.geode-uri.path={}", uriString)).c_str(), gdDir.wstring().c_str(), TRUE);
             return 0;
         }
 
