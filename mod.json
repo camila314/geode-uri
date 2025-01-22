@@ -9,6 +9,11 @@
 	"version": "v1.0.0",
 	"developer": "camila314",
 	"description": "API mod to allow mods to pick up on geode:// URLs",
+	"repository": "https://github.com/camila314/geode-uri",
+	"tags": [
+		"utility",
+		"developer"
+	],
 	"api": {
 		"include": [
 			"include/GeodeURI.hpp"
