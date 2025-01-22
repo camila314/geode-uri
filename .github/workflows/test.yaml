@@ -15,4 +15,4 @@ jobs:
     steps:
       - name: Test 1
         run: |
-          curl -vv --header 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' 'https://api.github.com/installation/repositories'
+          curl -vv --header 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' 'https://api.github.com/meta'
