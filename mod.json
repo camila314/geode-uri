@@ -1,12 +1,12 @@
 {
-	"geode": "4.2.0",
+	"geode": "5.0.0",
 	"gd": {
-		"win": "2.2074",
-		"mac": "2.2074"
+		"win": "2.2081",
+		"mac": "2.2081"
 	},
 	"id": "camila314.geode-uri",
 	"name": "Geode URI Scheme",
-	"version": "v1.0.2",
+	"version": "v1.0.3",
 	"developer": "camila314",
 	"description": "API mod to allow mods to pick up on geode:// URLs",
 	"repository": "https://github.com/camila314/geode-uri",

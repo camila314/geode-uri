@@ -10,7 +10,7 @@ Allows **geode://** to be intercepted by mods.
 $on_mod(Loaded) {
 	handleURI("alert", [](std::string const& path) {
 		FLAlertLayer::create("Custom Alert", path, "Ok")->show();
-	});
+	}).leak();
 }
 ```
 

@@ -1,16 +1,13 @@
 #pragma once
 
-#include <Geode/loader/EventV2.hpp>
+#include <Geode/loader/Event.hpp>
 #include <Geode/utils/string.hpp>
 #include <functional>
 #include <string>
 
-class URIEvent : public geode::Event {
-protected:
-    std::string uri;
+class URIEvent : public geode::Event<URIEvent, bool(std::string uri)> {
 public:
-    inline URIEvent(const std::string& uri) : uri(uri) {}
-    inline std::string const& getURI() const { return uri; }
+    using Event::Event;
 };
 
 /***
@@ -21,17 +18,15 @@ public:
  * Ex. with a handle path of `level`, the URI `geode://level/128
  * will call the callback with the string `128`.
  */
-inline geode::event::v2::EventHandler<URIEvent>* handleURI(
+inline geode::ListenerHandle handleURI(
     std::string const& handlePath,
     std::function<void(std::string const&)> callback
 ) {
-    auto hand = new geode::event::v2::EventHandler<URIEvent>([handlePath](URIEvent* ev) {
-        return geode::utils::string::startsWith(ev->getURI(), handlePath + "/");
+    return URIEvent().listen([handlePath, callback](const std::string& uri) {
+        if (geode::utils::string::startsWith(uri, handlePath + "/")) {
+            callback(uri.substr(handlePath.size() + 1));
+            return geode::ListenerResult::Stop;
+        }
+        return geode::ListenerResult::Propagate;
     });
-    hand->bind([=](URIEvent* ev) {
-        callback(ev->getURI().substr(handlePath.size() + 1));
-        return geode::ListenerResult::Stop;
-    });
-
-    return hand;
 }

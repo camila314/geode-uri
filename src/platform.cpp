@@ -80,7 +80,7 @@ bool setKeyValue(HKEY key, char const* name, char const* value) {
 }
 
 $on_mod(Loaded) {
-    auto exePath = string::wideToUtf8(Mod::get()->getSaveDir() / "GeodeURIHandler.exe");
+    auto exePath = string::wideToUtf8((Mod::get()->getSaveDir() / "GeodeURIHandler.exe").wstring());
 
     auto exeData = std::vector<uint8_t>(GeodeURIHandler, GeodeURIHandler + sizeof(GeodeURIHandler));
     if (auto err = file::writeBinary(exePath, exeData).err()) {
