@@ -47,6 +47,8 @@ $on_mod(Loaded) {
         log::error("Failed to chmod file: {}", execDir);
         return;
     }
+
+    log::info("yeah, it worked. so what?");
 }
 
 void bringToFront() {
