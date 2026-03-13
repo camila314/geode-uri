@@ -28,7 +28,6 @@ std::string percent_decode(std::string_view str) {
 
 void runEvent(std::string_view pathFlag) {
     auto path = percent_decode(pathFlag);
-
     if (URIEvent().send(path) == ListenerResult::Propagate) {
         log::info("No handler found for URI: {}", path);
         FLAlertLayer::create(
@@ -42,7 +41,6 @@ void runEvent(std::string_view pathFlag) {
 $on_mod(Loaded) {
     if (auto pathFlag = Mod::get()->getLaunchArgument("path")) {
         bringToFront();
-
         GameEvent(GameEventType::Loaded).listen([path = *pathFlag] {
             runEvent(path);
         }).leak();
