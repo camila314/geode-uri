@@ -28,7 +28,10 @@ std::string percent_decode(std::string_view str) {
 
 void runEvent(std::string_view pathFlag) {
     auto path = percent_decode(pathFlag);
-    if (URIEvent().send(path) == ListenerResult::Propagate) {
+    auto firstPath = path.substr(0, path.find('/'));
+    auto lastPath = path.substr(path.find('/') + 1);
+
+    if (URIEvent(firstPath).send(lastPath) == ListenerResult::Propagate) {
         log::info("No handler found for URI: {}", path);
         FLAlertLayer::create(
             "No Handler",
