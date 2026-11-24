@@ -44,12 +44,20 @@
         auto escaped = [unescaped stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLPathAllowedCharacterSet]];
 
         auto arg = [NSString stringWithFormat:@"--geode:camila314.geode-uri.path=%@", escaped];
-        [[NSWorkspace sharedWorkspace] launchApplicationAtURL: [NSURL fileURLWithPath:contents]
-                                       options: NSWorkspaceOpenConfiguration
-                                        configuration: @{NSWorkspaceOpenConfiguration setArguments: @[arg]}
-                                        error: nil];
 
-        [NSApp terminate:nil];
+        NSWorkspaceOpenConfiguration *config = [NSWorkspaceOpenConfiguration configuration];
+        config.arguments = @[arg];
+
+        [[NSWorkspace sharedWorkspace] openApplicationAtURL:[NSURL fileURLWithPath:contents]
+                                            configuration:config
+                                        completionHandler:^(NSRunningApplication * _Nullable app, NSError * _Nullable error) {
+            if (error) {
+                NSLog(@"Ошибка запуска: %@", error);
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [NSApp terminate:nil];
+            });
+        }];
     }
 
     if (!GeodeIPC::send("camila314.geode-uri", "handle", uriString.UTF8String)) {
