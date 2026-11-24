@@ -45,8 +45,8 @@
 
         auto arg = [NSString stringWithFormat:@"--geode:camila314.geode-uri.path=%@", escaped];
         [[NSWorkspace sharedWorkspace] launchApplicationAtURL: [NSURL fileURLWithPath:contents]
-                                       options: NSWorkspaceLaunchDefault
-                                        configuration: @{NSWorkspaceLaunchConfigurationArguments: @[arg]}
+                                       options: NSWorkspaceOpenConfiguration
+                                        configuration: @{NSWorkspaceOpenConfiguration setArguments: @[arg]}
                                         error: nil];
 
         [NSApp terminate:nil];

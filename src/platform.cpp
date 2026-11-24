@@ -20,7 +20,7 @@ $on_mod(Loaded) {
     } 
 
     if (appDir.exists()) {
-        std::filesystem::remove_all(appDir);
+        asp::fs::removeDirAll(appDir);
     }
 
     auto zipPath = Mod::get()->getTempDir() / "package.zip";
