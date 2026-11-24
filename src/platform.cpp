@@ -19,7 +19,7 @@ $on_mod(Loaded) {
         return;
     } 
 
-    if (std::filesystem::exists(appDir)) {
+    if (appDir.exists()) {
         std::filesystem::remove_all(appDir);
     }
 
@@ -38,7 +38,7 @@ $on_mod(Loaded) {
     }
 
     auto execDir = appDir / "Contents" / "MacOS" / "Geode URI Handler";
-    if (!std::filesystem::exists(execDir)) {
+    if (!execDir.exists) {
         log::error("Failed to find file: {}", execDir);
         return;
     }
@@ -80,7 +80,7 @@ bool setKeyValue(HKEY key, char const* name, char const* value) {
 }
 
 $on_mod(Loaded) {
-    auto exePath = string::wideToUtf8((Mod::get()->getSaveDir() / "GeodeURIHandler.exe").wstring());
+    auto exePath = (Mod::get()->getSaveDir() / "GeodeURIHandler.exe").string();
 
     auto exeData = std::vector<uint8_t>(GeodeURIHandler, GeodeURIHandler + sizeof(GeodeURIHandler));
     if (auto err = file::writeBinary(exePath, exeData).err()) {
