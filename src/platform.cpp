@@ -38,7 +38,7 @@ $on_mod(Loaded) {
     }
 
     auto execDir = appDir / "Contents" / "MacOS" / "Geode URI Handler";
-    if (!execDir.exists) {
+    if (!execDir.exists()) {
         log::error("Failed to find file: {}", execDir);
         return;
     }
