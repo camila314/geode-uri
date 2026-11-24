@@ -1,6 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <GeodeURIHandler.h>
 #include <sys/stat.h>
+#include <asp/fs/fs.hpp>
 
 using namespace geode::prelude;
 
@@ -19,8 +20,8 @@ $on_mod(Loaded) {
         return;
     } 
 
-    if (std::filesystem::exists(appDir)) {
-        std::filesystem::remove_all(appDir);
+    if (appDir.exists()) {
+        asp::fs::removeDirAll(appDir);
     }
 
     auto zipPath = Mod::get()->getTempDir() / "package.zip";
@@ -38,7 +39,7 @@ $on_mod(Loaded) {
     }
 
     auto execDir = appDir / "Contents" / "MacOS" / "Geode URI Handler";
-    if (!std::filesystem::exists(execDir)) {
+    if (!execDir.exists()) {
         log::error("Failed to find file: {}", execDir);
         return;
     }
@@ -56,13 +57,8 @@ void bringToFront() {
 
 #elif defined(GEODE_IS_WINDOWS)
 #include <windows.h>
-#include <codecvt>
 
 constexpr HKEY HNULL = (HKEY)NULL;
-
-std::string from_wstring(std::wstring const& x) {
-    return std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(x);
-}
 
 HKEY createKey(HKEY parent, char const* name) {
     if (!parent)
@@ -80,7 +76,7 @@ bool setKeyValue(HKEY key, char const* name, char const* value) {
 }
 
 $on_mod(Loaded) {
-    auto exePath = string::wideToUtf8((Mod::get()->getSaveDir() / "GeodeURIHandler.exe").wstring());
+    auto exePath = (Mod::get()->getSaveDir() / "GeodeURIHandler.exe").string();
 
     auto exeData = std::vector<uint8_t>(GeodeURIHandler, GeodeURIHandler + sizeof(GeodeURIHandler));
     if (auto err = file::writeBinary(exePath, exeData).err()) {
