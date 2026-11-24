@@ -56,13 +56,8 @@ void bringToFront() {
 
 #elif defined(GEODE_IS_WINDOWS)
 #include <windows.h>
-#include <codecvt>
 
 constexpr HKEY HNULL = (HKEY)NULL;
-
-std::string from_wstring(std::wstring const& x) {
-    return std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(x);
-}
 
 HKEY createKey(HKEY parent, char const* name) {
     if (!parent)

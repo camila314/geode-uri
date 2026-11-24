@@ -18,7 +18,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist"
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE geode-ipc "-framework Cocoa")
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    geode-ipc mat-json-impl "-framework Cocoa"
+)
 
 install(CODE "
     file(ARCHIVE_CREATE

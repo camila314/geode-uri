@@ -9,7 +9,9 @@ add_executable(${PROJECT_NAME} src/main.cpp icon.rc)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE TRUE) 
 
-target_link_libraries(${PROJECT_NAME} PRIVATE geode-ipc user32 shlwapi)
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    geode-ipc mat-json-impl user32 shlwapi
+)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND pwsh -executionpolicy bypass -File ${CMAKE_CURRENT_SOURCE_DIR}/generate_header.ps1 $<TARGET_FILE:GeodeURIHandler> ${CMAKE_BINARY_DIR}/GeodeURIHandler.h
