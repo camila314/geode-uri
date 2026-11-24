@@ -1,6 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <GeodeURIHandler.h>
 #include <sys/stat.h>
+#include <asp/fs/fs.hpp>
 
 using namespace geode::prelude;
 
